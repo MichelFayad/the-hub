@@ -1,1 +1,18 @@
-{ "landing": { "title": "The Hub", "tagline": "Découvrez ce que vous allez aimer." } }
+{
+  "landing": {
+    "title": "The Hub",
+    "tagline": "Découvrez ce que vous allez aimer."
+  },
+  "location": {
+    "about": "À propos",
+    "categories": "Catégories",
+    "tags": "Étiquettes",
+    "hours": "Horaires",
+    "contact": "Contact",
+    "website": "Site web",
+    "phone": "Téléphone",
+    "verified": "Vérifié",
+    "viewOnMap": "Voir sur la carte",
+    "notFound": "Lieu introuvable"
+  }
+}

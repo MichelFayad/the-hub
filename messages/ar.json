@@ -1,1 +1,15 @@
-{ "landing": { "title": "ذا هَب", "tagline": "اكتشف ما ستحبه." } }
+{
+  "landing": { "title": "ذا هَب", "tagline": "اكتشف ما ستحبه." },
+  "location": {
+    "about": "نبذة",
+    "categories": "الفئات",
+    "tags": "الوسوم",
+    "hours": "ساعات العمل",
+    "contact": "اتصال",
+    "website": "الموقع الإلكتروني",
+    "phone": "الهاتف",
+    "verified": "موثّق",
+    "viewOnMap": "عرض على الخريطة",
+    "notFound": "الموقع غير موجود"
+  }
+}

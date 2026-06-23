@@ -1,1 +1,15 @@
-{ "landing": { "title": "The Hub", "tagline": "Discover what you'll love." } }
+{
+  "landing": { "title": "The Hub", "tagline": "Discover what you'll love." },
+  "location": {
+    "about": "About",
+    "categories": "Categories",
+    "tags": "Tags",
+    "hours": "Hours",
+    "contact": "Contact",
+    "website": "Website",
+    "phone": "Phone",
+    "verified": "Verified",
+    "viewOnMap": "View on map",
+    "notFound": "Location not found"
+  }
+}

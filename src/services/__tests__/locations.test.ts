@@ -1,7 +1,11 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { prisma } from "@/lib/db";
-import { createLocation, getLocationById } from "@/services/locations";
+import {
+  createLocation,
+  getLocationById,
+  getLocationProfile,
+} from "@/services/locations";
 
 let primaryId: string;
 let secondaryId: string;
@@ -63,5 +67,26 @@ describe("locations service", () => {
 
   it("returns null for an unknown id", async () => {
     expect(await getLocationById("does-not-exist")).toBeNull();
+  });
+
+  it("builds a localized profile view-model with category fallback", async () => {
+    const loc = await createLocation({
+      name: "Localized Place",
+      primaryCategoryId: primaryId,
+      secondaryCategoryIds: [secondaryId],
+      tags: ["x"],
+    });
+    createdLocationIds.push(loc.id);
+
+    const profile = await getLocationProfile(loc.id, "ar");
+    // Test categories have no Arabic name → fall back to English.
+    expect(profile?.primaryCategory.name).toBe("Test Primary");
+    expect(profile?.secondaryCategories[0].name).toBe("Test Secondary");
+    expect(profile?.name).toBe("Localized Place");
+    expect(profile?.tags).toEqual(["x"]);
+  });
+
+  it("returns null profile for an unknown id", async () => {
+    expect(await getLocationProfile("nope", "en")).toBeNull();
   });
 });
