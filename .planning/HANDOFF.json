@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T14:05:49.171Z",
+  "timestamp": "2026-06-23T19:55:46.437Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -26,17 +26,21 @@
     },
     {
       "status": "??",
-      "path": "prisma/migrations/20260623140313_add_category_taxonomy/"
+      "path": "\"The Hub - Build Plan (Technical Reference).pdf\""
     },
     {
       "status": "??",
-      "path": "src/services/__tests__/taxonomy.test.ts"
+      "path": "prisma/migrations/20260623210000_add_listing_lifecycle/"
     },
     {
       "status": "??",
-      "path": "src/services/taxonomy.ts"
+      "path": "src/services/__tests__/listings.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/services/listings.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n04aae37 ci: use Node 22 — pnpm 11.8 requires Node >= 22.13\nce34be0 ci: pin pnpm via packageManager field to fix setup-node cache\n89d20e2 docs: add architecture map (CLAUDE.md)\nf0238be ci: add lint/typecheck/test workflow with Postgres service\n6e13151 feat: add guarded Sentry error-monitoring init"
+  "context_notes": "Recent commits:\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map\n8a74413 feat: add admin bulk location import engine\n844a35b feat: add favorites, custom lists, and share links"
 }

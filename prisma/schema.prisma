@@ -47,6 +47,8 @@ model User {
   lists          List[]
   reviews        Review[]
   reviewVotes    ReviewVote[]
+  claims         LocationClaim[]
+  adminActions   AdminActionLog[]   @relation("AdminActor")
 }
 
 // Location category taxonomy (scope §3): a self-referential tree. Parent
@@ -138,6 +140,7 @@ model Location {
   favorites Favorite[]
   listItems ListItem[]
   reviews   Review[]
+  claims    LocationClaim[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -259,4 +262,50 @@ model ReviewVote {
 
   @@unique([userId, reviewId])
   @@index([reviewId])
+}
+
+// Ownership claim on an existing listing (scope §5/§6). A business user
+// claims an unclaimed Location; an admin approves or rejects. Approval
+// sets the Location's owner and claimed flag. One pending claim per
+// (user, location) — re-claiming after a decision is allowed.
+enum ClaimStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model LocationClaim {
+  id         String      @id @default(cuid())
+  userId     String
+  locationId String
+  status     ClaimStatus @default(PENDING)
+  note       String?
+  decidedBy  String?
+  decidedAt  DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([userId])
+  @@index([status])
+}
+
+// Append-only audit trail of privileged actions (scope §5 approval gate,
+// §12 accountability). Every admin listing/claim decision writes one row.
+model AdminActionLog {
+  id          String   @id @default(cuid())
+  adminUserId String
+  action      String
+  targetType  String
+  targetId    String
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  admin User @relation("AdminActor", fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([targetType, targetId])
 }
