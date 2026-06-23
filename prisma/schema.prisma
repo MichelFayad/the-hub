@@ -31,6 +31,27 @@ model User {
   interactions  InteractionEvent[]
 }
 
+// Location category taxonomy (scope §3): a self-referential tree. Parent
+// categories have parentId = null; subcategories point at their parent.
+// Only English names are sourced today; ar/fr fall back to nameEn until
+// translated. `slug` is the stable, locale-independent identifier.
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  nameEn    String
+  nameAr    String?
+  nameFr    String?
+  parentId  String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children Category[] @relation("CategoryTree")
+
+  @@index([parentId])
+}
+
 model InteractionEvent {
   id        String   @id @default(cuid())
   userId    String?

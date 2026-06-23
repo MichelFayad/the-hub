@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T09:46:41.902Z",
+  "timestamp": "2026-06-23T14:05:49.171Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -22,25 +22,21 @@
     },
     {
       "status": "M",
-      "path": "package.json"
-    },
-    {
-      "status": "M",
-      "path": "pnpm-lock.yaml"
+      "path": "prisma/schema.prisma"
     },
     {
       "status": "??",
-      "path": "docker-compose.yml"
+      "path": "prisma/migrations/20260623140313_add_category_taxonomy/"
     },
     {
       "status": "??",
-      "path": "src/lib/__tests__/env.test.ts"
+      "path": "src/services/__tests__/taxonomy.test.ts"
     },
     {
       "status": "??",
-      "path": "src/lib/env.ts"
+      "path": "src/services/taxonomy.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n74c673b chore: scaffold Next.js app with Vitest harness\nee6d178 Add project scope and approved build plan spec"
+  "context_notes": "Recent commits:\n04aae37 ci: use Node 22 — pnpm 11.8 requires Node >= 22.13\nce34be0 ci: pin pnpm via packageManager field to fix setup-node cache\n89d20e2 docs: add architecture map (CLAUDE.md)\nf0238be ci: add lint/typecheck/test workflow with Postgres service\n6e13151 feat: add guarded Sentry error-monitoring init"
 }
