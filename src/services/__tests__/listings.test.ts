@@ -39,6 +39,7 @@ describe("listing lifecycle", () => {
 
   afterAll(async () => {
     await prisma.adminActionLog.deleteMany({ where: { adminUserId: admin } });
+    await prisma.notification.deleteMany({ where: { userId: { in: [owner, claimant] } } });
     await prisma.locationClaim.deleteMany({ where: { locationId: { in: created } } });
     await prisma.location.deleteMany({ where: { id: { in: created } } });
     await prisma.category.delete({ where: { id: catId } });
@@ -71,6 +72,10 @@ describe("listing lifecycle", () => {
       where: { adminUserId: admin, action: "APPROVE_LISTING", targetId: loc.id },
     });
     expect(log).not.toBeNull();
+    const notif = await prisma.notification.findFirst({
+      where: { userId: owner, type: "LISTING_APPROVED" },
+    });
+    expect(notif).not.toBeNull();
   });
 
   it("rejects approval from a non-admin actor", async () => {
@@ -102,6 +107,10 @@ describe("listing lifecycle", () => {
       where: { adminUserId: admin, action: "REJECT_LISTING", targetId: loc.id },
     });
     expect(log?.metadata).toMatchObject({ reason: "incomplete info" });
+    const notif = await prisma.notification.findFirst({
+      where: { userId: owner, type: "LISTING_REJECTED" },
+    });
+    expect(notif?.body).toContain("incomplete info");
   });
 
   it("files a claim on an unclaimed listing as PENDING", async () => {
@@ -144,6 +153,10 @@ describe("listing lifecycle", () => {
       where: { adminUserId: admin, action: "APPROVE_CLAIM", targetId: claim.id },
     });
     expect(log).not.toBeNull();
+    const notif = await prisma.notification.findFirst({
+      where: { userId: claimant, type: "CLAIM_APPROVED" },
+    });
+    expect(notif).not.toBeNull();
   });
 
   it("rejects a claim without changing ownership", async () => {
@@ -157,5 +170,9 @@ describe("listing lifecycle", () => {
     const updated = await prisma.location.findUnique({ where: { id: loc.id } });
     expect(updated?.ownerUserId).toBeNull();
     expect(updated?.claimed).toBe(false);
+    const notif = await prisma.notification.findFirst({
+      where: { userId: claimant, type: "CLAIM_REJECTED" },
+    });
+    expect(notif).not.toBeNull();
   });
 });

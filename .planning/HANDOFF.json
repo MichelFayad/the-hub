@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T20:09:54.122Z",
+  "timestamp": "2026-06-23T20:15:20.407Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -25,18 +25,26 @@
       "path": "prisma/schema.prisma"
     },
     {
-      "status": "??",
-      "path": "prisma/migrations/20260623230000_add_user_preference/"
+      "status": "M",
+      "path": "src/services/__tests__/listings.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/services/listings.ts"
     },
     {
       "status": "??",
-      "path": "src/services/__tests__/preferences.test.ts"
+      "path": "prisma/migrations/20260623233000_add_notifications/"
     },
     {
       "status": "??",
-      "path": "src/services/preferences.ts"
+      "path": "src/services/__tests__/notifications.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/services/notifications.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nc94431c feat: add review moderation queue + COI heuristic\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up"
+  "context_notes": "Recent commits:\n62daa6f feat: add onboarding questionnaire + rule-based recommendations\nc94431c feat: add review moderation queue + COI heuristic\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up"
 }

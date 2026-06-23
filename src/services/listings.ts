@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { assertRole } from "@/lib/rbac";
 import type { AppRole } from "@/lib/auth-helpers";
 import type { Prisma } from "@/generated/prisma/client";
+import { createNotification } from "@/services/notifications";
 
 // Listing lifecycle (scope §5). Business users self-register a listing or
 // claim an existing one; both land in a PENDING state. An admin approves or
@@ -70,6 +71,14 @@ export async function approveListing(args: { adminUserId: string; locationId: st
     data: { status: "PUBLISHED" },
   });
   await logAction(args.adminUserId, "APPROVE_LISTING", "Location", loc.id);
+  if (loc.ownerUserId) {
+    await createNotification({
+      userId: loc.ownerUserId,
+      type: "LISTING_APPROVED",
+      title: "Your listing was approved",
+      body: loc.name,
+    });
+  }
   return loc;
 }
 
@@ -87,6 +96,14 @@ export async function rejectListing(args: {
   await logAction(args.adminUserId, "REJECT_LISTING", "Location", loc.id, {
     reason: args.reason ?? null,
   });
+  if (loc.ownerUserId) {
+    await createNotification({
+      userId: loc.ownerUserId,
+      type: "LISTING_REJECTED",
+      title: "Your listing was rejected",
+      body: args.reason,
+    });
+  }
   return loc;
 }
 
@@ -127,6 +144,11 @@ export async function approveClaim(args: { adminUserId: string; claimId: string 
     locationId: claim.locationId,
     userId: claim.userId,
   });
+  await createNotification({
+    userId: claim.userId,
+    type: "CLAIM_APPROVED",
+    title: "Your ownership claim was approved",
+  });
   return updatedClaim;
 }
 
@@ -143,6 +165,12 @@ export async function rejectClaim(args: {
   });
   await logAction(args.adminUserId, "REJECT_CLAIM", "LocationClaim", claim.id, {
     reason: args.reason ?? null,
+  });
+  await createNotification({
+    userId: claim.userId,
+    type: "CLAIM_REJECTED",
+    title: "Your ownership claim was rejected",
+    body: args.reason,
   });
   return claim;
 }

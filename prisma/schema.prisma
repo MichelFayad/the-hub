@@ -51,6 +51,7 @@ model User {
   claims         LocationClaim[]
   adminActions   AdminActionLog[]   @relation("AdminActor")
   preference     UserPreference?
+  notifications  Notification[]
 }
 
 // Location category taxonomy (scope §3): a self-referential tree. Parent
@@ -297,6 +298,33 @@ model UserPreference {
   updatedAt           DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// In-app notification center (scope §4.6). Today wired to approval/
+// rejection status updates for listings and claims; new-listing-match and
+// review-response triggers are deferred follow-ups (need the matching and
+// review-reply features respectively). Push/email channels need a
+// provider integration and are out of scope for this slice.
+enum NotificationType {
+  LISTING_APPROVED
+  LISTING_REJECTED
+  CLAIM_APPROVED
+  CLAIM_REJECTED
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType
+  title      String
+  body       String?
+  metadata   Json             @default("{}")
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
 }
 
 // A like (+1) or dislike (-1) on a review (scope §4.4): one per user per
