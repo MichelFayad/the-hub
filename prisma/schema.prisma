@@ -95,6 +95,13 @@ model Location {
   latitude  Float?
   longitude Float?
 
+  // Price tier 1–4 (scope §4.2 price filter), set at seed/claim.
+  priceLevel Int?
+  // Rating denormalized from Review for fast filter/sort; populated in
+  // Phase 2 when reviews ship. Defaults reflect "no reviews yet".
+  ratingAvg   Float?
+  ratingCount Int    @default(0)
+
   hours           Json?
   googleMapsUrl   String?
   website         String?
