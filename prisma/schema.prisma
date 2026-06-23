@@ -47,6 +47,7 @@ model User {
   lists          List[]
   reviews        Review[]
   reviewVotes    ReviewVote[]
+  reviewFlags    ReviewFlag[]       @relation("FlagReporter")
   claims         LocationClaim[]
   adminActions   AdminActionLog[]   @relation("AdminActor")
 }
@@ -241,10 +242,38 @@ model Review {
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   location Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
   votes    ReviewVote[]
+  flags    ReviewFlag[]
 
   @@unique([userId, locationId])
   @@index([locationId])
   @@index([userId])
+}
+
+// User/heuristic report against a review (scope §13). A flag moves the
+// review into the moderation queue (PENDING). One flag per (review,
+// reporter); the auto-COI heuristic flags with reporterId = the review
+// author so the unique key holds for system-raised flags too.
+enum FlagReason {
+  SPAM
+  OFFENSIVE
+  FAKE
+  CONFLICT_OF_INTEREST
+  OTHER
+}
+
+model ReviewFlag {
+  id         String     @id @default(cuid())
+  reviewId   String
+  reporterId String
+  reason     FlagReason
+  note       String?
+  createdAt  DateTime   @default(now())
+
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reporter User   @relation("FlagReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, reporterId])
+  @@index([reviewId])
 }
 
 // A like (+1) or dislike (-1) on a review (scope §4.4): one per user per

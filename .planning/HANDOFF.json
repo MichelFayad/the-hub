@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T19:57:55.436Z",
+  "timestamp": "2026-06-23T20:04:48.381Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -25,22 +25,18 @@
       "path": "prisma/schema.prisma"
     },
     {
-      "status": "M",
-      "path": "src/lib/__tests__/auth-helpers.test.ts"
+      "status": "??",
+      "path": "prisma/migrations/20260623220000_add_review_flags/"
     },
     {
-      "status": "M",
-      "path": "src/lib/__tests__/rbac.test.ts"
+      "status": "??",
+      "path": "src/services/__tests__/moderation.test.ts"
     },
     {
-      "status": "M",
-      "path": "src/lib/auth-helpers.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/rbac.ts"
+      "status": "??",
+      "path": "src/services/moderation.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map\n8a74413 feat: add admin bulk location import engine"
+  "context_notes": "Recent commits:\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map"
 }
