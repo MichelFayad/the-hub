@@ -38,6 +38,13 @@ model User {
   // Soft delete (scope §6, §12.3): account removal keeps review integrity.
   isDeleted DateTime?
 
+  // TOTP second factor (scope §12.1). mfaSecret is app-level encrypted
+  // (see src/lib/crypto.ts) — never stored or logged in plaintext.
+  // Mandatory for ADMIN/SUPER_ADMIN (enforced via assertMfaSatisfied),
+  // optional but available to every role.
+  mfaSecret  String?
+  mfaEnabled Boolean @default(false)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
