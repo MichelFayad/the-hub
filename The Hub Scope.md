@@ -1,0 +1,5 @@
+I wanna start creating a huge project. It will be a reliable “Hub” where users can sign up for free, complete a series of questions to form a profile and for us to decide what they like. The Hub will have all kinds of activities (hiking, restaurants, events, services…) added. The user can search according to what he wants, but also he will get suggestions based on his profile. The db can contain gyms, supermarkets, stores, shops, restaurants, travel offices, basically anything Google Maps gives us without the map.
+
+Each place will have pictures, description and some documents uploaded if needed (for example a menu if its a restaurant) alongside its link on Google Maps and their contact.
+
+We have 5 types of users: Super Admin (me), Admin (my team), normal user/end user, Agency (representing multiple locations) and individual locations. The last 2 (agency and individual locations) will be charged to Feature their locations. 
