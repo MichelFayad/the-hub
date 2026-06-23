@@ -1,10 +1,15 @@
 allowBuilds:
   '@parcel/watcher': true
+  '@prisma/engines': true
+  '@sentry/cli': true
   '@swc/core': true
+  prisma: true
+  sharp: true
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'
   - '@prisma/engines'
+  - '@sentry/cli'
   - '@swc/core'
   - prisma
   - sharp
