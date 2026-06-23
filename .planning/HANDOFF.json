@@ -1,8 +1,8 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T09:24:37.307Z",
+  "timestamp": "2026-06-23T09:44:04.792Z",
   "source": "auto-postool",
-  "partial": true,
+  "partial": false,
   "phase": null,
   "phase_name": null,
   "phase_dir": null,
@@ -15,7 +15,76 @@
   "blockers": [],
   "human_actions_pending": [],
   "decisions": [],
-  "uncommitted_files": [],
+  "uncommitted_files": [
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
+    {
+      "status": "M",
+      "path": ".planning/HANDOFF.json"
+    },
+    {
+      "status": "??",
+      "path": ".npmrc"
+    },
+    {
+      "status": "??",
+      "path": "AGENTS.md"
+    },
+    {
+      "status": "??",
+      "path": "CLAUDE.md"
+    },
+    {
+      "status": "??",
+      "path": "README.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/superpowers/plans/"
+    },
+    {
+      "status": "??",
+      "path": "next.config.ts"
+    },
+    {
+      "status": "??",
+      "path": "package.json"
+    },
+    {
+      "status": "??",
+      "path": "pnpm-lock.yaml"
+    },
+    {
+      "status": "??",
+      "path": "pnpm-workspace.yaml"
+    },
+    {
+      "status": "??",
+      "path": "postcss.config.mjs"
+    },
+    {
+      "status": "??",
+      "path": "public/"
+    },
+    {
+      "status": "??",
+      "path": "src/"
+    },
+    {
+      "status": "??",
+      "path": "tsconfig.json"
+    },
+    {
+      "status": "??",
+      "path": "vitest.config.ts"
+    },
+    {
+      "status": "??",
+      "path": "vitest.setup.ts"
+    }
+  ],
   "next_action": null,
-  "context_notes": ""
+  "context_notes": "Recent commits:\nee6d178 Add project scope and approved build plan spec"
 }
