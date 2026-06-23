@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T20:19:46.122Z",
+  "timestamp": "2026-06-23T20:24:19.919Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -33,26 +33,22 @@
       "path": "prisma/schema.prisma"
     },
     {
-      "status": "??",
-      "path": "prisma/migrations/20260624010000_add_user_mfa/"
+      "status": "M",
+      "path": "src/auth.ts"
     },
     {
       "status": "??",
-      "path": "src/lib/__tests__/crypto.test.ts"
+      "path": "prisma/migrations/20260624020000_add_user_password_auth/"
     },
     {
       "status": "??",
-      "path": "src/lib/crypto.ts"
+      "path": "src/services/__tests__/password-auth.test.ts"
     },
     {
       "status": "??",
-      "path": "src/services/__tests__/mfa.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/services/mfa.ts"
+      "path": "src/services/password-auth.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nc97dc10 feat: add in-app notification center, wired to listing/claim decisions\n62daa6f feat: add onboarding questionnaire + rule-based recommendations\nc94431c feat: add review moderation queue + COI heuristic\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)"
+  "context_notes": "Recent commits:\n8fad401 feat: add TOTP MFA, mandatory for Admin/Super Admin\nc97dc10 feat: add in-app notification center, wired to listing/claim decisions\n62daa6f feat: add onboarding questionnaire + rule-based recommendations\nc94431c feat: add review moderation queue + COI heuristic\n93651bf refactor: rename account roles to new naming scheme"
 }

@@ -45,6 +45,15 @@ model User {
   mfaSecret  String?
   mfaEnabled Boolean @default(false)
 
+  // Email/password auth (scope §2, §12.1): bcrypt hash, never plaintext or
+  // reversible encryption. failedLoginAttempts/lockedUntil implement the
+  // login lockout requirement (brute-force/credential-stuffing defense).
+  // OAuth (End Users only, scope §2/§11) is a separate, credential-less
+  // path and needs no password.
+  passwordHash        String?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
