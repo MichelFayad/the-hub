@@ -35,5 +35,12 @@ Build plan: `docs/superpowers/specs/2026-06-23-the-hub-build-plan-design.md`.
 - `pnpm prisma generate` — regenerate the client into `src/generated/prisma/`
 
 ## Phases
-0 Foundations (done) · 1 Catalog+Discovery · 2 Accounts+Trust ·
+0 Foundations (done) · 1 Catalog+Discovery (done) · 2 Accounts+Trust ·
 3 Monetization · 4 Intelligence · 5 Mobile+Hardening.
+
+Phase 1 services live in `src/services/`: `taxonomy` (category tree +
+seed), `locations` (CRUD + localized profile view-model), `search`
+(FTS + PostGIS discovery), `favorites` (favorites/lists/share links),
+`import-locations` (admin bulk import). Deferred hooks noted in code:
+secondary-category search, open-now (needs P2 hours schema), boosted
+surfacing (P3), search GIN/GiST indexes (hardening).
