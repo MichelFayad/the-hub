@@ -28,7 +28,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  interactions  InteractionEvent[]
+  interactions   InteractionEvent[]
+  ownedLocations Location[]         @relation("LocationOwner")
 }
 
 // Location category taxonomy (scope §3): a self-referential tree. Parent
@@ -49,6 +50,9 @@ model Category {
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
   children Category[] @relation("CategoryTree")
 
+  primaryLocations   Location[] @relation("LocationPrimary")
+  secondaryLocations Location[] @relation("LocationSecondary")
+
   @@index([parentId])
 }
 
@@ -63,4 +67,71 @@ model InteractionEvent {
 
   @@index([type])
   @@index([createdAt])
+}
+
+// Listing lifecycle (scope §5). Approval transitions land in Phase 2; the
+// status field exists from the start so search can surface only PUBLISHED.
+enum ListingStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+// A discoverable place (scope §4.3, §6). Geo is stored as plain lat/lng
+// here; the PostGIS geography column + GiST index + radius queries are
+// added in the search slice where distance filtering lives.
+model Location {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  status      ListingStatus @default(DRAFT)
+
+  primaryCategoryId   String
+  primaryCategory     Category   @relation("LocationPrimary", fields: [primaryCategoryId], references: [id], onDelete: Restrict)
+  secondaryCategories Category[] @relation("LocationSecondary")
+  tags                String[]
+
+  latitude  Float?
+  longitude Float?
+
+  hours           Json?
+  googleMapsUrl   String?
+  website         String?
+  phoneNumber     String?
+  phoneVerified   Boolean   @default(false)
+  phoneVerifiedAt DateTime?
+
+  // Owner is nullable until the listing is claimed (scope §6). Agency
+  // ownership is added in Phase 3 (monetization).
+  ownerUserId String?
+  ownerUser   User?   @relation("LocationOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  claimed     Boolean @default(false)
+
+  media Media[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([primaryCategoryId])
+  @@index([status])
+}
+
+enum MediaType {
+  PHOTO
+  DOCUMENT
+}
+
+// Photos and documents attached to a Location (scope §6). Stored as
+// signed/expiring object-storage URLs (S3/R2) — upload flow is Phase 2.
+model Media {
+  id         String    @id @default(cuid())
+  locationId String
+  location   Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  url        String
+  type       MediaType @default(PHOTO)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([locationId])
 }
