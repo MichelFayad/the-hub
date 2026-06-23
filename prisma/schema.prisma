@@ -105,7 +105,9 @@ model Location {
   ratingCount Int    @default(0)
 
   hours           Json?
-  googleMapsUrl   String?
+  // Address of record (scope §6/§9); also the natural dedup key for the
+  // admin bulk import (scope §5.1). Nullable — Postgres permits many NULLs.
+  googleMapsUrl   String?   @unique
   website         String?
   phoneNumber     String?
   phoneVerified   Boolean   @default(false)
