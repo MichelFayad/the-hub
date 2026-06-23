@@ -25,6 +25,19 @@ model User {
   displayName   String
   role          Role     @default(END_USER)
   emailVerified Boolean  @default(false)
+
+  // Phone verification (scope §5, §12.1) — gate for posting reviews and
+  // for taking a Location live. Set via OTP flow (later slice).
+  phoneNumber   String?  @unique
+  phoneVerified Boolean  @default(false)
+
+  // Reputation derived from review history + votes received + moderation
+  // (scope §4.4). Recomputed when votes/moderation change.
+  reviewerScore Float    @default(0)
+
+  // Soft delete (scope §6, §12.3): account removal keeps review integrity.
+  isDeleted DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -32,6 +45,8 @@ model User {
   ownedLocations Location[]         @relation("LocationOwner")
   favorites      Favorite[]
   lists          List[]
+  reviews        Review[]
+  reviewVotes    ReviewVote[]
 }
 
 // Location category taxonomy (scope §3): a self-referential tree. Parent
@@ -122,6 +137,7 @@ model Location {
   media     Media[]
   favorites Favorite[]
   listItems ListItem[]
+  reviews   Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -194,4 +210,53 @@ model ListItem {
 
   @@unique([listId, locationId])
   @@index([listId])
+}
+
+// Review moderation state (scope §4.4, §13). New reviews are VISIBLE;
+// flagged ones move to PENDING for the queue and may end up REMOVED.
+enum ModerationStatus {
+  VISIBLE
+  PENDING
+  REMOVED
+}
+
+// One review per user per location (scope §4.4): editable, not duplicable.
+// likes/dislikes are denormalized from ReviewVote for fast reads. Review
+// photos are a documented follow-up (Media is Location-bound today).
+model Review {
+  id               String           @id @default(cuid())
+  userId           String
+  locationId       String
+  rating           Int
+  text             String?
+  moderationStatus ModerationStatus @default(VISIBLE)
+  likesCount       Int              @default(0)
+  dislikesCount    Int              @default(0)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  votes    ReviewVote[]
+
+  @@unique([userId, locationId])
+  @@index([locationId])
+  @@index([userId])
+}
+
+// A like (+1) or dislike (-1) on a review (scope §4.4): one per user per
+// review, changeable. Rolls up into counts and the author's reviewerScore.
+model ReviewVote {
+  id        String   @id @default(cuid())
+  userId    String
+  reviewId  String
+  value     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, reviewId])
+  @@index([reviewId])
 }
