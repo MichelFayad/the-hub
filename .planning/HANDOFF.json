@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T09:44:04.792Z",
+  "timestamp": "2026-06-23T09:46:41.902Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -18,73 +18,29 @@
   "uncommitted_files": [
     {
       "status": "M",
-      "path": ".gitignore"
-    },
-    {
-      "status": "M",
       "path": ".planning/HANDOFF.json"
     },
     {
-      "status": "??",
-      "path": ".npmrc"
-    },
-    {
-      "status": "??",
-      "path": "AGENTS.md"
-    },
-    {
-      "status": "??",
-      "path": "CLAUDE.md"
-    },
-    {
-      "status": "??",
-      "path": "README.md"
-    },
-    {
-      "status": "??",
-      "path": "docs/superpowers/plans/"
-    },
-    {
-      "status": "??",
-      "path": "next.config.ts"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "package.json"
     },
     {
-      "status": "??",
+      "status": "M",
       "path": "pnpm-lock.yaml"
     },
     {
       "status": "??",
-      "path": "pnpm-workspace.yaml"
+      "path": "docker-compose.yml"
     },
     {
       "status": "??",
-      "path": "postcss.config.mjs"
+      "path": "src/lib/__tests__/env.test.ts"
     },
     {
       "status": "??",
-      "path": "public/"
-    },
-    {
-      "status": "??",
-      "path": "src/"
-    },
-    {
-      "status": "??",
-      "path": "tsconfig.json"
-    },
-    {
-      "status": "??",
-      "path": "vitest.config.ts"
-    },
-    {
-      "status": "??",
-      "path": "vitest.setup.ts"
+      "path": "src/lib/env.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nee6d178 Add project scope and approved build plan spec"
+  "context_notes": "Recent commits:\n74c673b chore: scaffold Next.js app with Vitest harness\nee6d178 Add project scope and approved build plan spec"
 }
