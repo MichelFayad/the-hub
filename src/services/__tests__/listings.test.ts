@@ -23,10 +23,10 @@ describe("listing lifecycle", () => {
       data: { email: `ll-admin-${Date.now()}@e.com`, displayName: "Admin", role: "ADMIN" },
     });
     const o = await prisma.user.create({
-      data: { email: `ll-owner-${Date.now()}@e.com`, displayName: "Owner", role: "INDIVIDUAL_LOCATION" },
+      data: { email: `ll-owner-${Date.now()}@e.com`, displayName: "Owner", role: "BUSINESS_OWNER" },
     });
     const c = await prisma.user.create({
-      data: { email: `ll-claim-${Date.now()}@e.com`, displayName: "Claimant", role: "INDIVIDUAL_LOCATION" },
+      data: { email: `ll-claim-${Date.now()}@e.com`, displayName: "Claimant", role: "BUSINESS_OWNER" },
     });
     admin = a.id;
     owner = o.id;

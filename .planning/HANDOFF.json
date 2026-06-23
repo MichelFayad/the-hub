@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T19:55:46.437Z",
+  "timestamp": "2026-06-23T19:57:55.436Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -25,22 +25,22 @@
       "path": "prisma/schema.prisma"
     },
     {
-      "status": "??",
-      "path": "\"The Hub - Build Plan (Technical Reference).pdf\""
+      "status": "M",
+      "path": "src/lib/__tests__/auth-helpers.test.ts"
     },
     {
-      "status": "??",
-      "path": "prisma/migrations/20260623210000_add_listing_lifecycle/"
+      "status": "M",
+      "path": "src/lib/__tests__/rbac.test.ts"
     },
     {
-      "status": "??",
-      "path": "src/services/__tests__/listings.test.ts"
+      "status": "M",
+      "path": "src/lib/auth-helpers.ts"
     },
     {
-      "status": "??",
-      "path": "src/services/listings.ts"
+      "status": "M",
+      "path": "src/lib/rbac.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map\n8a74413 feat: add admin bulk location import engine\n844a35b feat: add favorites, custom lists, and share links"
+  "context_notes": "Recent commits:\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map\n8a74413 feat: add admin bulk location import engine"
 }

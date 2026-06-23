@@ -21,7 +21,7 @@ describe("database", () => {
     });
     const found = await prisma.user.findUnique({ where: { id: user.id } });
     expect(found?.email).toBe(email);
-    expect(found?.role).toBe("END_USER");
+    expect(found?.role).toBe("USER");
     await prisma.user.delete({ where: { id: user.id } });
   });
 });

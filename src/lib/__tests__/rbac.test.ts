@@ -11,11 +11,11 @@ describe("rbac", () => {
   });
 
   it("denies lower roles", () => {
-    expect(hasRole("END_USER", "ADMIN")).toBe(false);
+    expect(hasRole("USER", "ADMIN")).toBe(false);
   });
 
   it("assertRole throws ForbiddenError when denied", () => {
-    expect(() => assertRole("END_USER", "ADMIN")).toThrow(ForbiddenError);
+    expect(() => assertRole("USER", "ADMIN")).toThrow(ForbiddenError);
   });
 
   it("assertRole passes silently when allowed", () => {

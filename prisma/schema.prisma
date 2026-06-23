@@ -14,16 +14,16 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   ADMIN
-  END_USER
+  USER
   AGENCY
-  INDIVIDUAL_LOCATION
+  BUSINESS_OWNER
 }
 
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
   displayName   String
-  role          Role     @default(END_USER)
+  role          Role     @default(USER)
   emailVerified Boolean  @default(false)
 
   // Phone verification (scope §5, §12.1) — gate for posting reviews and
