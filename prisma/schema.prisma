@@ -50,6 +50,7 @@ model User {
   reviewFlags    ReviewFlag[]       @relation("FlagReporter")
   claims         LocationClaim[]
   adminActions   AdminActionLog[]   @relation("AdminActor")
+  preference     UserPreference?
 }
 
 // Location category taxonomy (scope §3): a self-referential tree. Parent
@@ -274,6 +275,28 @@ model ReviewFlag {
 
   @@unique([reviewId, reporterId])
   @@index([reviewId])
+}
+
+// Onboarding/profile questionnaire answers (scope §4.1). One row per user
+// (1:1), editable from account settings. Interests are Category ids;
+// budgetMax is a price tier 1–4 (matches Location.priceLevel). These seed
+// the rule-based cold-start recommender (scope §8) before behavioral data
+// exists. Free-form multi-selects are stored as String[] to stay schema-
+// light; the recommender today keys off interests + budgetMax.
+model UserPreference {
+  userId              String   @id
+  interestCategoryIds String[]
+  budgetMax           Int?
+  companions          String[]
+  travelScope         String?
+  dietary             String[]
+  accessibility       String[]
+  frequency           String?
+  preferredLocale     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // A like (+1) or dislike (-1) on a review (scope §4.4): one per user per

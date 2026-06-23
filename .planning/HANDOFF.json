@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T20:04:48.381Z",
+  "timestamp": "2026-06-23T20:09:54.122Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -26,17 +26,17 @@
     },
     {
       "status": "??",
-      "path": "prisma/migrations/20260623220000_add_review_flags/"
+      "path": "prisma/migrations/20260623230000_add_user_preference/"
     },
     {
       "status": "??",
-      "path": "src/services/__tests__/moderation.test.ts"
+      "path": "src/services/__tests__/preferences.test.ts"
     },
     {
       "status": "??",
-      "path": "src/services/moderation.ts"
+      "path": "src/services/preferences.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up\nfe1bf49 docs: mark Phase 1 complete in architecture map"
+  "context_notes": "Recent commits:\nc94431c feat: add review moderation queue + COI heuristic\n93651bf refactor: rename account roles to new naming scheme\nce6187f feat: add listing lifecycle (claim/register/approval + audit log)\n2d62871 feat: add review votes and reviewer-score roll-up\nc7ff0fd feat: add reviews with verification gate and rating roll-up"
 }
