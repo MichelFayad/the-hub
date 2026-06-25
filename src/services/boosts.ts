@@ -11,7 +11,7 @@ export class BoostError extends Error {}
 
 const ELIGIBILITY_MIN_RATING = 3.0;
 const ELIGIBILITY_MIN_REVIEWS = 3;
-const DEFAULT_AGENCY_DISCOUNT = 0.2;
+export const DEFAULT_AGENCY_DISCOUNT = 0.2;
 
 type Duration = 7 | 14 | 30;
 

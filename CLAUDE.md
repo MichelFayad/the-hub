@@ -50,4 +50,9 @@ agency discount) + `lib/payments` (provider abstraction, manual
 stand-in pending gateway approval); `listings` extended with
 suspend/reinstate/archive; `users` (admin suspend/reinstate, blocks
 login). Shared admin assert+audit-log helper in `lib/admin-log.ts`.
-Still open: Agency console, analytics dashboard (§14).
+`agency` (console: owned-locations list w/ per-location metrics,
+aggregated dashboard + discount rate, bulk boost purchase across
+locations). Still open: analytics dashboard (§14) — note
+`interaction-log.ts` exists but isn't yet called from
+search/favorites/locations/reviews, so day-one logging is wired in
+name only; that gap likely needs closing as part of the dashboard work.
