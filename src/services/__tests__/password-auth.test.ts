@@ -64,6 +64,16 @@ describe("email/password auth", () => {
     expect(row?.failedLoginAttempts).toBe(0);
   });
 
+  it("blocks login for a suspended account", async () => {
+    const email = `pw-susp-${Date.now()}@e.com`;
+    const user = await registerWithPassword({ email, password: "Correct1!", displayName: "PWSusp" });
+    userIds.push(user.id);
+    await prisma.user.update({ where: { id: user.id }, data: { suspendedAt: new Date() } });
+    await expect(authenticateWithPassword({ email, password: "Correct1!" })).rejects.toThrow(
+      /suspended/,
+    );
+  });
+
   it("requires a valid TOTP code for an MFA-enabled admin", async () => {
     const email = `pw-admin-${Date.now()}@e.com`;
     const user = await registerWithPassword({

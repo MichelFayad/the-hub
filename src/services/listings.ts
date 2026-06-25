@@ -1,36 +1,11 @@
 import { prisma } from "@/lib/db";
-import { assertRole } from "@/lib/rbac";
-import type { AppRole } from "@/lib/auth-helpers";
-import type { Prisma } from "@/generated/prisma/client";
+import { assertAdmin, logAdminAction as logAction } from "@/lib/admin-log";
 import { createNotification } from "@/services/notifications";
 
 // Listing lifecycle (scope §5). Business users self-register a listing or
 // claim an existing one; both land in a PENDING state. An admin approves or
 // rejects. Every privileged decision is written to the AdminActionLog audit
 // trail. RBAC is enforced server-side here, never in the UI alone.
-
-/** Load an actor's role and assert it meets ADMIN, else throw ForbiddenError. */
-async function assertAdmin(adminUserId: string): Promise<void> {
-  const actor = await prisma.user.findUnique({
-    where: { id: adminUserId },
-    select: { role: true },
-  });
-  if (!actor) throw new Error("admin user not found");
-  assertRole(actor.role as AppRole, "ADMIN");
-}
-
-/** Append one row to the privileged-action audit trail. */
-async function logAction(
-  adminUserId: string,
-  action: string,
-  targetType: string,
-  targetId: string,
-  metadata: Prisma.InputJsonValue = {},
-): Promise<void> {
-  await prisma.adminActionLog.create({
-    data: { adminUserId, action, targetType, targetId, metadata },
-  });
-}
 
 export interface RegisterLocationInput {
   ownerUserId: string;
@@ -173,4 +148,85 @@ export async function rejectClaim(args: {
     body: args.reason,
   });
   return claim;
+}
+
+/** Admin: suspend a published listing — reversible via reinstateLocation. */
+export async function suspendLocation(args: {
+  adminUserId: string;
+  locationId: string;
+  reason?: string;
+}) {
+  await assertAdmin(args.adminUserId);
+  const loc = await prisma.location.findUnique({ where: { id: args.locationId } });
+  if (!loc) throw new Error("location not found");
+  if (loc.status !== "PUBLISHED") {
+    throw new Error("only published listings can be suspended");
+  }
+  const updated = await prisma.location.update({
+    where: { id: args.locationId },
+    data: { status: "SUSPENDED" },
+  });
+  await logAction(args.adminUserId, "SUSPEND_LISTING", "Location", updated.id, {
+    reason: args.reason ?? null,
+  });
+  if (updated.ownerUserId) {
+    await createNotification({
+      userId: updated.ownerUserId,
+      type: "LISTING_SUSPENDED",
+      title: "Your listing was suspended",
+      body: args.reason,
+    });
+  }
+  return updated;
+}
+
+/** Admin: reinstate a suspended listing back to PUBLISHED. */
+export async function reinstateLocation(args: { adminUserId: string; locationId: string }) {
+  await assertAdmin(args.adminUserId);
+  const loc = await prisma.location.findUnique({ where: { id: args.locationId } });
+  if (!loc) throw new Error("location not found");
+  if (loc.status !== "SUSPENDED") {
+    throw new Error("only suspended listings can be reinstated");
+  }
+  const updated = await prisma.location.update({
+    where: { id: args.locationId },
+    data: { status: "PUBLISHED" },
+  });
+  await logAction(args.adminUserId, "REINSTATE_LISTING", "Location", updated.id);
+  if (updated.ownerUserId) {
+    await createNotification({
+      userId: updated.ownerUserId,
+      type: "LISTING_REINSTATED",
+      title: "Your listing was reinstated",
+    });
+  }
+  return updated;
+}
+
+/** Admin: archive a listing — terminal, no path back via approval flow. */
+export async function archiveLocation(args: {
+  adminUserId: string;
+  locationId: string;
+  reason?: string;
+}) {
+  await assertAdmin(args.adminUserId);
+  const loc = await prisma.location.findUnique({ where: { id: args.locationId } });
+  if (!loc) throw new Error("location not found");
+  if (loc.status === "ARCHIVED") throw new Error("listing is already archived");
+  const updated = await prisma.location.update({
+    where: { id: args.locationId },
+    data: { status: "ARCHIVED" },
+  });
+  await logAction(args.adminUserId, "ARCHIVE_LISTING", "Location", updated.id, {
+    reason: args.reason ?? null,
+  });
+  if (updated.ownerUserId) {
+    await createNotification({
+      userId: updated.ownerUserId,
+      type: "LISTING_ARCHIVED",
+      title: "Your listing was archived",
+      body: args.reason,
+    });
+  }
+  return updated;
 }

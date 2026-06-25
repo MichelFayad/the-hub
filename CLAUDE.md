@@ -44,3 +44,10 @@ seed), `locations` (CRUD + localized profile view-model), `search`
 `import-locations` (admin bulk import). Deferred hooks noted in code:
 secondary-category search, open-now (needs P2 hours schema), boosted
 surfacing (P3), search GIN/GiST indexes (hardening).
+
+Phase 3 so far: `boosts` (pay-per-boost purchase, eligibility floor,
+agency discount) + `lib/payments` (provider abstraction, manual
+stand-in pending gateway approval); `listings` extended with
+suspend/reinstate/archive; `users` (admin suspend/reinstate, blocks
+login). Shared admin assert+audit-log helper in `lib/admin-log.ts`.
+Still open: Agency console, analytics dashboard (§14).

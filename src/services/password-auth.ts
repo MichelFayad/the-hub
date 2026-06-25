@@ -51,6 +51,10 @@ export async function authenticateWithPassword(input: AuthenticateInput) {
     throw new AuthError("account locked, try again later");
   }
 
+  if (user.suspendedAt) {
+    throw new AuthError("account suspended");
+  }
+
   const valid = await bcrypt.compare(input.password, user.passwordHash);
   if (!valid) {
     const attempts = user.failedLoginAttempts + 1;

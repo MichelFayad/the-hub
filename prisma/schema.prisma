@@ -38,6 +38,11 @@ model User {
   // Soft delete (scope §6, §12.3): account removal keeps review integrity.
   isDeleted DateTime?
 
+  // Admin suspend/reinstate (scope §4.7) — distinct from isDeleted: a
+  // suspension is a reversible admin action that blocks login, not a
+  // user-initiated account removal.
+  suspendedAt DateTime?
+
   // TOTP second factor (scope §12.1). mfaSecret is app-level encrypted
   // (see src/lib/crypto.ts) — never stored or logged in plaintext.
   // Mandatory for ADMIN/SUPER_ADMIN (enforced via assertMfaSatisfied),
@@ -122,6 +127,11 @@ enum ListingStatus {
   PENDING
   PUBLISHED
   REJECTED
+  // Admin-initiated (scope §4.7): SUSPENDED is reversible (reinstate back
+  // to PUBLISHED); ARCHIVED is terminal — neither has a path back via the
+  // approval flow.
+  SUSPENDED
+  ARCHIVED
 }
 
 // A discoverable place (scope §4.3, §6). Geo is stored as plain lat/lng
@@ -366,6 +376,11 @@ enum NotificationType {
   LISTING_REJECTED
   CLAIM_APPROVED
   CLAIM_REJECTED
+  LISTING_SUSPENDED
+  LISTING_REINSTATED
+  LISTING_ARCHIVED
+  ACCOUNT_SUSPENDED
+  ACCOUNT_REINSTATED
 }
 
 model Notification {

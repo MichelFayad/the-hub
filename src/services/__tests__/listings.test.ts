@@ -8,6 +8,9 @@ import {
   rejectListing,
   approveClaim,
   rejectClaim,
+  suspendLocation,
+  reinstateLocation,
+  archiveLocation,
 } from "@/services/listings";
 import { ForbiddenError } from "@/lib/rbac";
 
@@ -174,5 +177,67 @@ describe("listing lifecycle", () => {
       where: { userId: claimant, type: "CLAIM_REJECTED" },
     });
     expect(notif).not.toBeNull();
+  });
+
+  it("suspends a published listing and notifies the owner", async () => {
+    const loc = await prisma.location.create({
+      data: { name: "Suspendable", primaryCategoryId: catId, status: "PUBLISHED", ownerUserId: owner },
+    });
+    created.push(loc.id);
+    const updated = await suspendLocation({ adminUserId: admin, locationId: loc.id, reason: "policy violation" });
+    expect(updated.status).toBe("SUSPENDED");
+    const log = await prisma.adminActionLog.findFirst({
+      where: { adminUserId: admin, action: "SUSPEND_LISTING", targetId: loc.id },
+    });
+    expect(log?.metadata).toMatchObject({ reason: "policy violation" });
+    const notif = await prisma.notification.findFirst({
+      where: { userId: owner, type: "LISTING_SUSPENDED" },
+    });
+    expect(notif).not.toBeNull();
+  });
+
+  it("refuses to suspend a listing that isn't published", async () => {
+    const loc = await prisma.location.create({
+      data: { name: "Still Pending", primaryCategoryId: catId, status: "PENDING", ownerUserId: owner },
+    });
+    created.push(loc.id);
+    await expect(
+      suspendLocation({ adminUserId: admin, locationId: loc.id }),
+    ).rejects.toThrow(/published/);
+  });
+
+  it("reinstates a suspended listing back to PUBLISHED", async () => {
+    const loc = await prisma.location.create({
+      data: { name: "Reinstatable", primaryCategoryId: catId, status: "SUSPENDED", ownerUserId: owner },
+    });
+    created.push(loc.id);
+    const updated = await reinstateLocation({ adminUserId: admin, locationId: loc.id });
+    expect(updated.status).toBe("PUBLISHED");
+    const notif = await prisma.notification.findFirst({
+      where: { userId: owner, type: "LISTING_REINSTATED" },
+    });
+    expect(notif).not.toBeNull();
+  });
+
+  it("archives a listing with no path back", async () => {
+    const loc = await prisma.location.create({
+      data: { name: "Archivable", primaryCategoryId: catId, status: "PUBLISHED", ownerUserId: owner },
+    });
+    created.push(loc.id);
+    const updated = await archiveLocation({ adminUserId: admin, locationId: loc.id });
+    expect(updated.status).toBe("ARCHIVED");
+    await expect(
+      archiveLocation({ adminUserId: admin, locationId: loc.id }),
+    ).rejects.toThrow(/already archived/);
+  });
+
+  it("rejects admin-only actions from a non-admin actor", async () => {
+    const loc = await prisma.location.create({
+      data: { name: "Guarded Suspend", primaryCategoryId: catId, status: "PUBLISHED", ownerUserId: owner },
+    });
+    created.push(loc.id);
+    await expect(
+      suspendLocation({ adminUserId: owner, locationId: loc.id }),
+    ).rejects.toThrow(ForbiddenError);
   });
 });
