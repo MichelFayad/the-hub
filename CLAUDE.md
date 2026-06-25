@@ -113,5 +113,32 @@ locations (search, profile — optional auth for view/search logging),
 favorites (list/add/remove), reviews (list/submit), notifications
 (list), preferences (get/save questionnaire), recommendations
 (rule-based). Admin/Agency consoles and boosts are web-only by design
-— management back-office, no mobile parity needed at V1. Expo app
-itself (scaffolding, deep-linking) not yet started.
+— management back-office, no mobile parity needed at V1.
+
+## Phase 5 — Expo app (`mobile/`)
+
+SDK 56, expo-router (file-based routing, the SDK's recommended
+default — confirmed against the v56 docs, not assumed from training
+data per `mobile/AGENTS.md`'s own warning). Standalone npm project,
+not a pnpm workspace member — Metro can't easily resolve outside its
+own root, so `mobile/src/api/types.ts` is a thin, deliberate DTO
+duplicate of the mobile API's response shapes, not shared business
+logic. `scheme: "thehub"` set in `app.json` as deep-linking prep
+(Universal Links/App Links config itself not done).
+
+- `src/api/client.ts` — fetch wrapper, `EXPO_PUBLIC_API_URL` base,
+  attaches the bearer token from `setAuthToken`.
+- `src/context/AuthContext.tsx` — token+user persisted via
+  `expo-secure-store`; login/register/logout.
+- `app/(auth)/` login+register; `app/(tabs)/` search+favorites+account;
+  `app/location/[id].tsx` profile+reviews+favorite. Root `_layout.tsx`
+  gates auth vs tabs.
+
+**Verification ceiling in this environment:** no device/simulator, no
+Xcode/Android Studio, and `expo export -p web` is blocked by an
+upstream SDK56 react-native-web/react-dom peer-dep conflict (not our
+code) — web support dependency was dropped rather than forced with
+`--legacy-peer-deps`. Verified via `tsc --noEmit` (clean) and
+`expo-doctor` (21/21 checks pass). Actually running the app on a
+device/simulator is unverified and is the next thing to do once that
+environment exists.
