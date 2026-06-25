@@ -37,7 +37,7 @@ Build plan: `docs/superpowers/specs/2026-06-23-the-hub-build-plan-design.md`.
 ## Phases
 0 Foundations (done) · 1 Catalog+Discovery (done) · 2 Accounts+Trust
 (done) · 3 Monetization (done) · 4 Intelligence (recsys prototype done,
-chatbot deferred) · 5 Mobile+Hardening.
+chatbot deferred) · 5 Mobile+Hardening (API layer started).
 
 Phase 1 services live in `src/services/`: `taxonomy` (category tree +
 seed), `locations` (CRUD + localized profile view-model), `search`
@@ -95,3 +95,23 @@ explicit the ML model needs real interaction volume to earn its
 place; this prototype's job was proving the pipeline works, not
 beating the baseline on fake data. Chatbot (§4.9) deferred — no LLM
 provider chosen yet.
+
+## Phase 5 — mobile API layer
+
+Stack confirmed Next.js full-stack (not the scope doc's NestJS
+suggestion — see top of file), so the API layer is Next route
+handlers under `src/app/api/mobile/`, not a separate backend. Mobile
+auth is bearer-JWT (`src/lib/mobile-auth.ts`, `jose`, same
+`AUTH_SECRET` as the web session) since NextAuth's cookie session
+doesn't fit React Native cleanly — login/register issue a 30-day
+token, every other mobile route requires/accepts it via
+`requireMobileUser`/`optionalMobileUser`. Shared error->status mapping
+in `src/lib/api-error.ts`.
+
+Routes so far: auth (login/register, End User only on mobile),
+locations (search, profile — optional auth for view/search logging),
+favorites (list/add/remove), reviews (list/submit), notifications
+(list), preferences (get/save questionnaire), recommendations
+(rule-based). Admin/Agency consoles and boosts are web-only by design
+— management back-office, no mobile parity needed at V1. Expo app
+itself (scaffolding, deep-linking) not yet started.
