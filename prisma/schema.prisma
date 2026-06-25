@@ -54,6 +54,14 @@ model User {
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
 
+  // Agency boost discount rate (scope §7), e.g. 0.20 for 20% off. Only
+  // meaningful for role = AGENCY; null means "use the platform default
+  // flat rate" so a future volume-tiered model can override per-agency
+  // without a schema change.
+  boostDiscountRate Float?
+
+  boostsPurchased Boost[] @relation("BoostBuyer")
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -160,6 +168,7 @@ model Location {
   listItems ListItem[]
   reviews   Review[]
   claims    LocationClaim[]
+  boosts    Boost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -292,6 +301,37 @@ model ReviewFlag {
 
   @@unique([reviewId, reporterId])
   @@index([reviewId])
+}
+
+// Pay-per-boost purchase (scope §7). One row per purchase; a Location can
+// have multiple historical Boosts but at most the ones with endsAt in the
+// future count as currently active (checked at query time, not a status
+// column, so nothing needs a cron job to "expire" a row). priceCents is
+// the actual amount charged (post-discount) — kept even if pricing or the
+// discount rate changes later, so past purchases stay historically
+// accurate. No refunds (scope §7): there is no cancelled/refunded state.
+enum BoostPlacement {
+  SEARCH_BOOST
+  CATEGORY_TOP
+  HOMEPAGE
+}
+
+model Boost {
+  id              String         @id @default(cuid())
+  locationId      String
+  purchasedByUserId String
+  placement       BoostPlacement
+  durationDays    Int
+  priceCents      Int
+  startsAt        DateTime       @default(now())
+  endsAt          DateTime
+  createdAt       DateTime       @default(now())
+
+  location     Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  purchasedBy  User     @relation("BoostBuyer", fields: [purchasedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([endsAt])
 }
 
 // Onboarding/profile questionnaire answers (scope §4.1). One row per user
