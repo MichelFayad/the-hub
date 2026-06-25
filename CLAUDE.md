@@ -36,7 +36,8 @@ Build plan: `docs/superpowers/specs/2026-06-23-the-hub-build-plan-design.md`.
 
 ## Phases
 0 Foundations (done) · 1 Catalog+Discovery (done) · 2 Accounts+Trust
-(done) · 3 Monetization (done) · 4 Intelligence · 5 Mobile+Hardening.
+(done) · 3 Monetization (done) · 4 Intelligence (recsys prototype done,
+chatbot deferred) · 5 Mobile+Hardening.
 
 Phase 1 services live in `src/services/`: `taxonomy` (category tree +
 seed), `locations` (CRUD + localized profile view-model), `search`
@@ -61,3 +62,36 @@ from password-auth (LOGIN), search (SEARCH_PERFORMED), locations
 (REVIEW_SUBMITTED), boosts (BOOST_PURCHASED) — event-type strings
 live in `lib/analytics-events.ts`, the single source both emitters
 and `analytics.ts` read from. Phase 3 scope complete.
+
+## Phase 4 — recsys prototype (`recsys/`)
+
+Separate Python (3.14) package, not wired into the Next app — per
+scope §8, real interaction volume is too thin to train on yet, so
+this validates the pipeline end-to-end against a self-contained
+synthetic dataset (never touches the live Postgres DB). `pip install
+-r requirements.txt` into a venv, `pytest` to run tests, `python -m
+app.evaluate` for the A/B report, `uvicorn app.api:app --reload` to
+serve.
+
+- `app/synthetic_data.py` — generates users/locations/categories +
+  preference-driven implicit interactions (not pure noise).
+- `app/rule_based_baseline.py` — Python mirror of
+  `src/services/preferences.ts` `recommendForUser`, so the eval is a
+  fair head-to-head against what's actually live in production.
+- `app/hybrid_model.py` — content-based (category/budget/rating)
+  blended with collaborative filtering via TruncatedSVD (scikit-learn)
+  over the implicit interaction matrix. `implicit`/LightFM skipped —
+  compiled C extensions, unreliable cross-platform builds.
+- `app/evaluate.py` — train/test split + Precision@K/Recall@K for
+  both models on identical held-out users.
+- `app/api.py` — FastAPI `/recommend`, trained at startup on synthetic
+  data; wiring to the real DB + a retraining schedule + live A/B is
+  the deploy-time follow-up (scope §8 calls this an infra job, not a
+  modeling job).
+
+Honest current result: on synthetic data, rule-based beats the hybrid
+model (precision@10 ~0.14 vs ~0.07). Expected, not a bug — §8 is
+explicit the ML model needs real interaction volume to earn its
+place; this prototype's job was proving the pipeline works, not
+beating the baseline on fake data. Chatbot (§4.9) deferred — no LLM
+provider chosen yet.
