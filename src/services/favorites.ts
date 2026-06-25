@@ -1,15 +1,19 @@
 import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 // Favorites, custom lists, and public view-only share links (scope §4.5).
 
 /** Save a location to a user's favorites. Idempotent on (user, location). */
-export function addFavorite(userId: string, locationId: string) {
-  return prisma.favorite.upsert({
+export async function addFavorite(userId: string, locationId: string) {
+  const favorite = await prisma.favorite.upsert({
     where: { userId_locationId: { userId, locationId } },
     create: { userId, locationId },
     update: {},
   });
+  await logInteraction({ userId, type: ANALYTICS_EVENTS.FAVORITE_ADDED, metadata: { locationId } });
+  return favorite;
 }
 
 export function removeFavorite(userId: string, locationId: string) {

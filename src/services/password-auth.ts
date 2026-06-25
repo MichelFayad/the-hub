@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { verifyMfaCode } from "@/services/mfa";
 import type { AppRole } from "@/lib/auth-helpers";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 // Email/password auth (scope §2, §12.1). OAuth (End Users only) is a
 // separate credential-less path, not implemented here. Mandatory MFA for
@@ -82,6 +84,8 @@ export async function authenticateWithPassword(input: AuthenticateInput) {
     where: { id: user.id },
     data: { failedLoginAttempts: 0, lockedUntil: null },
   });
+
+  await logInteraction({ userId: user.id, type: ANALYTICS_EVENTS.LOGIN });
 
   return user;
 }

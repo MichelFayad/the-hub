@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
 import { localizedName } from "@/services/taxonomy";
 import type { Locale } from "@/i18n/direction";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 export interface MediaInput {
   url: string;
@@ -86,13 +88,23 @@ export interface LocationProfile {
   media: { url: string; type: string }[];
 }
 
-/** Presentation-ready, locale-resolved profile for the location page (§4.3). */
+/**
+ * Presentation-ready, locale-resolved profile for the location page (§4.3).
+ * userId is optional (anonymous viewing) and, when present, logs a
+ * LOCATION_VIEWED event for the analytics dashboard's view-conversion
+ * metrics (scope §14) — never logged for a 404.
+ */
 export async function getLocationProfile(
   id: string,
   locale: Locale,
+  userId?: string,
 ): Promise<LocationProfile | null> {
   const loc = await getLocationById(id);
   if (!loc) return null;
+
+  if (userId) {
+    await logInteraction({ userId, type: ANALYTICS_EVENTS.LOCATION_VIEWED, metadata: { locationId: id } });
+  }
 
   return {
     id: loc.id,

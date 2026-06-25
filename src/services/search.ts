@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 // Discovery search over locations (scope §4.2): keyword full-text,
 // category, distance radius (PostGIS), price, and rating, with sorting.
@@ -19,6 +21,9 @@ export interface SearchParams {
   sort?: "relevance" | "distance" | "rating" | "newest";
   limit?: number;
   offset?: number;
+  // Attributes the search to a user for the analytics dashboard's
+  // search-to-view conversion metric (scope §14). Omit for anonymous search.
+  userId?: string;
 }
 
 export interface SearchResult {
@@ -82,7 +87,7 @@ export async function searchLocations(
   const limit = Math.min(params.limit ?? 50, 100);
   const offset = params.offset ?? 0;
 
-  return prisma.$queryRaw<SearchResult[]>(Prisma.sql`
+  const results = await prisma.$queryRaw<SearchResult[]>(Prisma.sql`
     SELECT l.id, l.name, l."ratingAvg", l."priceLevel",
            ${distExpr} AS "distanceMeters"
     FROM "Location" l
@@ -90,4 +95,14 @@ export async function searchLocations(
     ORDER BY ${orderBy}
     LIMIT ${limit} OFFSET ${offset}
   `);
+
+  if (params.userId) {
+    await logInteraction({
+      userId: params.userId,
+      type: ANALYTICS_EVENTS.SEARCH_PERFORMED,
+      metadata: { query: params.query ?? null, resultCount: results.length },
+    });
+  }
+
+  return results;
 }

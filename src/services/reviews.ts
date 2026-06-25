@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/db";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 // Reviews & ratings (scope §4.4). One review per user per location,
 // editable but not duplicable. Posting requires a verified account
@@ -61,6 +63,11 @@ export async function submitReview(input: SubmitReviewInput) {
   });
 
   await recomputeLocationRating(input.locationId);
+  await logInteraction({
+    userId: input.userId,
+    type: ANALYTICS_EVENTS.REVIEW_SUBMITTED,
+    metadata: { locationId: input.locationId, rating: input.rating },
+  });
   return review;
 }
 

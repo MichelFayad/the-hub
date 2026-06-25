@@ -35,8 +35,8 @@ Build plan: `docs/superpowers/specs/2026-06-23-the-hub-build-plan-design.md`.
 - `pnpm prisma generate` — regenerate the client into `src/generated/prisma/`
 
 ## Phases
-0 Foundations (done) · 1 Catalog+Discovery (done) · 2 Accounts+Trust ·
-3 Monetization · 4 Intelligence · 5 Mobile+Hardening.
+0 Foundations (done) · 1 Catalog+Discovery (done) · 2 Accounts+Trust
+(done) · 3 Monetization (done) · 4 Intelligence · 5 Mobile+Hardening.
 
 Phase 1 services live in `src/services/`: `taxonomy` (category tree +
 seed), `locations` (CRUD + localized profile view-model), `search`
@@ -52,7 +52,12 @@ suspend/reinstate/archive; `users` (admin suspend/reinstate, blocks
 login). Shared admin assert+audit-log helper in `lib/admin-log.ts`.
 `agency` (console: owned-locations list w/ per-location metrics,
 aggregated dashboard + discount rate, bulk boost purchase across
-locations). Still open: analytics dashboard (§14) — note
-`interaction-log.ts` exists but isn't yet called from
-search/favorites/locations/reviews, so day-one logging is wired in
-name only; that gap likely needs closing as part of the dashboard work.
+locations). `analytics` (admin dashboard, §14: signup→questionnaire,
+listing-claim, review-rate, search→view/view→favorite conversion,
+DAU/MAU/30-day retention, boost conversion+repeat segmented
+Individual vs Agency). `interaction-log.ts` is now actually called
+from password-auth (LOGIN), search (SEARCH_PERFORMED), locations
+(LOCATION_VIEWED), favorites (FAVORITE_ADDED), reviews
+(REVIEW_SUBMITTED), boosts (BOOST_PURCHASED) — event-type strings
+live in `lib/analytics-events.ts`, the single source both emitters
+and `analytics.ts` read from. Phase 3 scope complete.

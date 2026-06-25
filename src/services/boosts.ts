@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import type { BoostPlacement } from "@/generated/prisma/client";
 import { manualPaymentProvider, type PaymentProvider } from "@/lib/payments";
+import { logInteraction } from "@/services/interaction-log";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 // Pay-per-boost purchase (scope §7). Pricing is the illustrative table from
 // the scope doc, in USD cents; the flat 20% agency discount is the chosen
@@ -74,7 +76,7 @@ export async function purchaseBoost(
   const startsAt = new Date();
   const endsAt = new Date(startsAt.getTime() + input.durationDays * 24 * 60 * 60 * 1000);
 
-  return prisma.boost.create({
+  const boost = await prisma.boost.create({
     data: {
       locationId: input.locationId,
       purchasedByUserId: input.userId,
@@ -85,6 +87,16 @@ export async function purchaseBoost(
       endsAt,
     },
   });
+
+  // Segmented by buyer role (scope §14: boost conversion/repeat-purchase,
+  // Individual Location vs. Agency).
+  await logInteraction({
+    userId: input.userId,
+    type: ANALYTICS_EVENTS.BOOST_PURCHASED,
+    metadata: { placement: input.placement, durationDays: input.durationDays, priceCents, role: actor.role },
+  });
+
+  return boost;
 }
 
 /** The currently-active boost for a location, if any (highest tier first). */
